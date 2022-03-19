@@ -24,6 +24,17 @@ class URLController {
             res.json({ originURL, hash, shortURL });
         });
     }
+    redirect(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { hash } = req.params;
+            const url = {
+                originURL: "https://cloud.mongodb.com/v2/622d28516432427a9fa00d73#clusters/connect?clusterId=DIO-Encurtador-URL",
+                hash: "mPFscSbx7",
+                shortURL: "http://localhost:5000/mPFscSbx7",
+            };
+            res.redirect(url.originURL);
+        });
+    }
 }
 exports.URLController = URLController;
 //# sourceMappingURL=URLController.js.map
