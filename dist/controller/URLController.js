@@ -13,26 +13,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.URLController = void 0;
+const URL_1 = __importDefault(require("../database/model/URL"));
 const shortid_1 = __importDefault(require("shortid"));
 const Constants_1 = require("../config/Constants");
 class URLController {
     shorten(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { originURL } = req.body;
+            const url = yield URL_1.default.findOne({ originURL });
+            if (url) {
+                res.json(url);
+                return;
+            }
             const hash = shortid_1.default.generate();
             const shortURL = `${Constants_1.config.API_URL}/${hash}`;
-            res.json({ originURL, hash, shortURL });
+            const newURL = yield URL_1.default.create({ hash, shortURL, originURL });
+            res.json(newURL);
         });
     }
     redirect(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { hash } = req.params;
-            const url = {
-                originURL: "https://cloud.mongodb.com/v2/622d28516432427a9fa00d73#clusters/connect?clusterId=DIO-Encurtador-URL",
-                hash: "mPFscSbx7",
-                shortURL: "http://localhost:5000/mPFscSbx7",
-            };
-            res.redirect(url.originURL);
+            const url = yield URL_1.default.findOne({ hash });
+            if (url) {
+                res.redirect(url.originURL);
+                return;
+            }
+            res.status(400).json({ error: "URL not found" });
         });
     }
 }
